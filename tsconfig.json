@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-    "target": "es6",                                  
+    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "target": "es6",
     /* Modules */
     "module": "commonjs",                                /* Specify what module code is generated. */
     "baseUrl": "./src",
