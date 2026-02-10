@@ -13,7 +13,7 @@ export const getUserById = (req: Request, res: Response) => User.findById(req.pa
   .then((user) => res.send({ user }))
   .catch((error) => (error instanceof mongoose.Error.DocumentNotFoundError
     ? res.status(NOT_FOUND_ERROR_CODE)
-      .send('Пользователь по указанному _id не найден')
+      .send({ message: 'Пользователь по указанному _id не найден' })
     : res.status(SERVER_ERROR_CODE).send({ message: 'На сервере произошла ошибка' })));
 
 export const createUser = (req: Request, res: Response) => {
@@ -22,7 +22,7 @@ export const createUser = (req: Request, res: Response) => {
     .then((user) => res.send({ user }))
     .catch((error) => (error instanceof mongoose.Error.ValidationError
       ? res.status(INCORRECT_DATA_ERROR_CODE)
-        .send('Переданы некорректные данные при создании пользователя')
+        .send({ message: 'Переданы некорректные данные при создании пользователя' })
       : res.status(SERVER_ERROR_CODE).send({ message: 'На сервере произошла ошибка' })));
 };
 

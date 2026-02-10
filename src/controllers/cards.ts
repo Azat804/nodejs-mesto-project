@@ -15,7 +15,7 @@ export const createCard = (req: Request, res: Response) => {
     .then((card) => res.send({ card }))
     .catch((error) => (error instanceof mongoose.Error.ValidationError
       ? res.status(INCORRECT_DATA_ERROR_CODE)
-        .send('Переданы некорректные данные при создании карточки') : res.status(SERVER_ERROR_CODE)
+        .send({ message: 'Переданы некорректные данные при создании карточки' }) : res.status(SERVER_ERROR_CODE)
         .send({ message: 'На сервере произошла ошибка' })));
 };
 
