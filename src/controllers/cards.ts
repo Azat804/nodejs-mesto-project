@@ -6,13 +6,13 @@ import { INCORRECT_DATA_ERROR_CODE, NOT_FOUND_ERROR_CODE, SERVER_ERROR_CODE } fr
 
 export const getCards = (req: Request, res: Response) => Card.find({})
   .then((cards) => res.send({ cards }))
-  .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+  .catch(() => res.status(SERVER_ERROR_CODE).send({ message: 'На сервере произошла ошибка' }));
 
 export const createCard = (req: Request, res: Response) => {
   const { name, link } = req.body;
   const userId = req.user._id;
   return Card.create({ name, link, owner: userId })
-    .then((card) => res.send({ card }))
+    .then((card) => res.status(201).send({ card }))
     .catch((error) => (error instanceof mongoose.Error.ValidationError
       ? res.status(INCORRECT_DATA_ERROR_CODE)
         .send({ message: 'Переданы некорректные данные при создании карточки' }) : res.status(SERVER_ERROR_CODE)

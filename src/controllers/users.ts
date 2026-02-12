@@ -6,7 +6,7 @@ import { INCORRECT_DATA_ERROR_CODE, NOT_FOUND_ERROR_CODE, SERVER_ERROR_CODE } fr
 
 export const getUsers = (req: Request, res: Response) => User.find({})
   .then((users) => res.send(users))
-  .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+  .catch(() => res.status(SERVER_ERROR_CODE).send({ message: 'На сервере произошла ошибка' }));
 
 export const getUserById = (req: Request, res: Response) => User.findById(req.params.userId)
   .orFail()
@@ -19,7 +19,7 @@ export const getUserById = (req: Request, res: Response) => User.findById(req.pa
 export const createUser = (req: Request, res: Response) => {
   const { name, about, avatar } = req.body;
   return User.create({ name, about, avatar })
-    .then((user) => res.send({ user }))
+    .then((user) => res.status(201).send({ user }))
     .catch((error) => (error instanceof mongoose.Error.ValidationError
       ? res.status(INCORRECT_DATA_ERROR_CODE)
         .send({ message: 'Переданы некорректные данные при создании пользователя' })
