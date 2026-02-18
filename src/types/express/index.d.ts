@@ -1,4 +1,4 @@
-interface IUser {
+ interface IUser {
   _id: any
 }
 // eslint-disable-next-line no-unused-vars

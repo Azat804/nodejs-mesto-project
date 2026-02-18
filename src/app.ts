@@ -1,9 +1,19 @@
 import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
 import mongoose from 'mongoose';
 import { rateLimit } from 'express-rate-limit';
+import cookieParser from 'cookie-parser';
+import { celebrate, Joi } from 'celebrate';
 import usersRouter from './routes/users';
 import cardsRouter from './routes/cards';
-import { NOT_FOUND_ERROR_CODE } from './constants/error-codes';
+import { login, createUser } from './controllers/users';
+import auth from './middlewares/auth';
+import { requestLogger, errorLogger } from './middlewares/logger';
+import NotFoundError from './errors/not-found-error';
+
+interface IError extends Error {
+  statusCode: number,
+}
 
 const { PORT = 3000 } = process.env;
 
@@ -17,20 +27,63 @@ const limiter = rateLimit({
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.use(limiter);
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(requestLogger);
+app.post(
+  '/signin',
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required(),
+      password: Joi.string().required(),
+    }),
+  }),
+  login,
+);
+app.post(
+  '/signup',
+  celebrate({
+    body: Joi.object().keys({
+      name: Joi.string().min(2).max(30),
+      about: Joi.string().min(2).max(30),
+      avatar: Joi.string(),
+      email: Joi.string().required(),
+      password: Joi.string().required(),
+    }),
+  }),
+  createUser,
+);
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-  req.user = {
-    _id: '698cdad6d4198787cbb0c126',
-  };
-  next();
-});
+app.use(auth);
 
 app.use('/', usersRouter);
 app.use('/', cardsRouter);
-app.use('*', (req: Request, res: Response) => res.status(NOT_FOUND_ERROR_CODE)
-  .send({ message: 'Запрашиваемый ресурс не найден' }));
+app.use('*', (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => next(new NotFoundError('Запрашиваемый ресурс не найден')));
+
+app.use(errorLogger);
+
+app.use((
+  err: IError,
+  req: Request,
+  res: Response,
+  // eslint-disable-next-line no-unused-vars
+  next: NextFunction,
+) => {
+  const { statusCode = 500, message } = err;
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message,
+    });
+});
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console

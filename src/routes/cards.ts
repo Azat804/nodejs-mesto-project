@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { celebrate, Joi } from 'celebrate';
 import {
   getCards, createCard, deleteCardById, likeCard, dislikeCard,
 } from '../controllers/cards';
@@ -6,9 +7,42 @@ import {
 const router = Router();
 
 router.get('/cards', getCards);
-router.post('/cards', createCard);
-router.delete('/cards/:cardId', deleteCardById);
-router.put('/cards/:cardId/likes', likeCard);
-router.delete('/cards/:cardId/likes', dislikeCard);
+router.post(
+  '/cards',
+  celebrate({
+    body: Joi.object().keys({
+      name: Joi.string().required().min(2).max(30),
+      link: Joi.string().required(),
+    }),
+  }),
+  createCard,
+);
+router.delete(
+  '/cards/:cardId',
+  celebrate({
+    params: Joi.object().keys({
+      cardId: Joi.string().required().alphanum().length(24),
+    }),
+  }),
+  deleteCardById,
+);
+router.put(
+  '/cards/:cardId/likes',
+  celebrate({
+    params: Joi.object().keys({
+      cardId: Joi.string().required().alphanum().length(24),
+    }),
+  }),
+  likeCard,
+);
+router.delete(
+  '/cards/:cardId/likes',
+  celebrate({
+    params: Joi.object().keys({
+      cardId: Joi.string().required().alphanum().length(24),
+    }),
+  }),
+  dislikeCard,
+);
 
 export default router;

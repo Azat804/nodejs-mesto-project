@@ -1,15 +1,24 @@
-import mongoose from 'mongoose';
+import {
+  model, Model, Schema, Document,
+} from 'mongoose';
+import ForbiddenError from '../errors/forbidden-error';
+import NotFoundError from '../errors/not-found-error';
 
 interface ICard {
   name: string,
   link: string,
-  owner: mongoose.Schema.Types.ObjectId,
+  owner: Schema.Types.ObjectId,
   about: string,
-  likes: Array<mongoose.Schema.Types.ObjectId>,
-  createdAt: mongoose.Schema.Types.Date
+  likes: Array<Schema.Types.ObjectId>,
+  createdAt: Schema.Types.Date
 }
 
-const cardSchema = new mongoose.Schema<ICard>({
+interface CardModel extends Model<ICard> {
+  // eslint-disable-next-line no-unused-vars
+  findCardByIdAndOwner: (cardId: string, userId: string) => Promise<Document<unknown, any, ICard>>
+}
+
+const cardSchema = new Schema<ICard>({
   name: {
     type: String,
     minlength: 2,
@@ -19,14 +28,18 @@ const cardSchema = new mongoose.Schema<ICard>({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator: (v: string) => /^https?:\/\/(?:www\.)?\S+\.\S+$/.test(v),
+      message: 'Неправильный формат ссылки',
+    },
   },
   owner: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'user',
     required: true,
   },
   likes: [{
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     default: undefined,
   }],
   createdAt: {
@@ -35,4 +48,16 @@ const cardSchema = new mongoose.Schema<ICard>({
   },
 }, { versionKey: false });
 
-export default mongoose.model<ICard>('card', cardSchema);
+cardSchema.static('findCardByIdAndOwner', function findCardByIdAndOwner(cardId: string, userId: string) {
+  return this.findById(cardId).then((card: any) => {
+    if (!card) {
+      return Promise.reject(new NotFoundError('Карточка с указанным _id не найдена'));
+    }
+    if (String(card.owner) !== userId) {
+      return Promise.reject(new ForbiddenError('У вас нет доступа к этому ресурсу'));
+    }
+    return card;
+  });
+});
+
+export default model<ICard, CardModel>('card', cardSchema);
