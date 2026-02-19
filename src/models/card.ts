@@ -49,7 +49,7 @@ const cardSchema = new Schema<ICard>({
 }, { versionKey: false });
 
 cardSchema.static('findCardByIdAndOwner', function findCardByIdAndOwner(cardId: string, userId: string) {
-  return this.findById(cardId).then((card: any) => {
+  return this.findById(cardId).then((card: ICard) => {
     if (!card) {
       return Promise.reject(new NotFoundError('Карточка с указанным _id не найдена'));
     }

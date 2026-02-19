@@ -54,7 +54,7 @@ export const dislikeCard = (
   next: NextFunction,
 ) => Card.findByIdAndUpdate(
   req.params.cardId,
-  { $pull: { likes: req.user._id } },
+  { $pull: { likes: req.user._id as unknown as mongoose.Schema.Types.ObjectId } },
   { new: true, runValidators: true },
 ).orFail()
   .then((card) => res.send({ card }))

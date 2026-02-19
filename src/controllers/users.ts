@@ -42,7 +42,7 @@ export const createUser = (
     email,
     password: hash,
   })))
-    .then((user: any) => res.status(201).send({ user }))
+    .then((user) => res.status(201).send({ user }))
     .catch((error) => {
       if (error instanceof Error && error.message.includes(UNIQUE_ERROR_CODE)) {
         return next(new ConflictError('Пользователь с такими данными уже существует'));

@@ -53,7 +53,16 @@ const userSchema = new Schema<IUser, UserModel>({
     required: true,
     select: false,
   },
-}, { versionKey: false });
+}, {
+  versionKey: false,
+  toJSON: {
+    transform: (_doc, ret) => {
+      // eslint-disable-next-line no-param-reassign
+      delete ret.password;
+      return ret;
+    },
+  },
+});
 
 userSchema.static('findUserByCredentials', function findUserByCredentials(email: string, password: string) {
   return this.findOne({ email }).select('+password').then((user) => {
