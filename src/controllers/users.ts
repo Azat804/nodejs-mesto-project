@@ -42,7 +42,7 @@ export const createUser = (
     email,
     password: hash,
   })))
-    .then((user) => res.status(201).send({ user }))
+    .then((user) => res.status(201).send(user))
     .catch((error) => {
       if (error instanceof Error && error.message.includes(UNIQUE_ERROR_CODE)) {
         return next(new ConflictError('Пользователь с такими данными уже существует'));
@@ -62,7 +62,7 @@ export const updateUserProfile = (
   const { name, about } = req.body;
   return User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail()
-    .then((user) => res.send({ user }))
+    .then((user) => res.send(user))
     .catch((error) => {
       if (error instanceof mongoose.Error.DocumentNotFoundError) {
         return next(new NotFoundError('Пользователь по указанному _id не найден'));
@@ -81,7 +81,7 @@ export const updateUserAvatar = (
   const { avatar } = req.body;
   return User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail()
-    .then((user) => res.send({ user }))
+    .then((user) => res.send(user))
     .catch((error) => {
       if (error instanceof mongoose.Error.DocumentNotFoundError) {
         return next(new NotFoundError('Пользователь по указанному _id не найден'));
@@ -102,13 +102,7 @@ export const login = (
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
-      res
-        .cookie('jwt', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-          sameSite: true,
-        })
-        .end();
+      res.send({ token });
     })
     .catch((error) => next(error));
 };
@@ -119,7 +113,7 @@ export const getCurrentUser = (
   next: NextFunction,
 ) => User.findById(req.user._id)
   .orFail()
-  .then((user) => res.send({ user }))
+  .then((user) => res.send(user))
   .catch((error) => (error instanceof mongoose.Error.DocumentNotFoundError
     ? next(new NotFoundError('Пользователь по указанному _id не найден'))
     : next(error)));

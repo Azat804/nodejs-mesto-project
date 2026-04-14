@@ -11,7 +11,12 @@ export default (
   res: Response,
   next: NextFunction,
 ) => {
-  const token = req.cookies.jwt;
+  const { authorization } = req.headers;
+
+  if (!authorization || !authorization.startsWith('Bearer ')) {
+    return next(new NotAuthorizedError('Необходима авторизация'));
+  }
+  const token = authorization.replace('Bearer ', '');
   let payload: IPayload;
   try {
     payload = jwt.verify(token, 'super-strong-secret') as IPayload;
