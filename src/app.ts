@@ -10,6 +10,7 @@ import { login, createUser } from './controllers/users';
 import auth from './middlewares/auth';
 import { requestLogger, errorLogger } from './middlewares/logger';
 import NotFoundError from './errors/not-found-error';
+import 'dotenv/config';
 
 interface IError extends Error {
   statusCode: number,

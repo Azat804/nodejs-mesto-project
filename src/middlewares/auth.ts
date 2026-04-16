@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import NotAuthorizedError from '../errors/not-authorized-error';
+import 'dotenv/config';
 
 interface IPayload {
   _id: string,
@@ -19,7 +20,7 @@ export default (
   const token = authorization.replace('Bearer ', '');
   let payload: IPayload;
   try {
-    payload = jwt.verify(token, 'super-strong-secret') as IPayload;
+    payload = jwt.verify(token, process.env.JWT_SECRET as string) as IPayload;
   } catch (error) {
     return next(new NotAuthorizedError('Необходима авторизация'));
   }
