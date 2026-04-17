@@ -29,7 +29,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.use(limiter);
 app.use(cors({
-  origin: 'http://localhost:3001',
+  origin: 'https://mestoapp.students.nomorepartiessite.ru',
   credentials: true,
 }));
 app.use(express.json());
