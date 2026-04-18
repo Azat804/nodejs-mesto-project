@@ -4,14 +4,15 @@ import mongoose from 'mongoose';
 import { rateLimit } from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
 import { celebrate, Joi } from 'celebrate';
+import dotenv from 'dotenv';
 import usersRouter from './routes/users';
 import cardsRouter from './routes/cards';
 import { login, createUser } from './controllers/users';
 import auth from './middlewares/auth';
 import { requestLogger, errorLogger } from './middlewares/logger';
 import NotFoundError from './errors/not-found-error';
-import 'dotenv/config';
 
+dotenv.config({ path: ['.env', '.env.deploy'] });
 interface IError extends Error {
   statusCode: number,
 }
