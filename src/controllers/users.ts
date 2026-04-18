@@ -1,12 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import User from '../models/user';
 import { UNIQUE_ERROR_CODE } from '../constants/error-codes';
 import NotFoundError from '../errors/not-found-error';
 import BadRequestError from '../errors/bad-request-error';
 import ConflictError from '../errors/conflict-error';
+
+dotenv.config({ path: ['.env', '.env.deploy'] });
 
 export const getUsers = (
   req: Request,
