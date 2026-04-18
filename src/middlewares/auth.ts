@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import NotAuthorizedError from '../errors/not-authorized-error';
 
-dotenv.config({ path: ['.env', '.env.deploy'] });
+dotenv.config({ path: ['./.env', './.env.deploy'] });
 
 interface IPayload {
   _id: string,

@@ -12,7 +12,7 @@ import auth from './middlewares/auth';
 import { requestLogger, errorLogger } from './middlewares/logger';
 import NotFoundError from './errors/not-found-error';
 
-dotenv.config({ path: ['.env', '.env.deploy'] });
+dotenv.config({ path: ['./.env', './.env.deploy'] });
 interface IError extends Error {
   statusCode: number,
 }

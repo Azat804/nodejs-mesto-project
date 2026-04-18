@@ -9,7 +9,7 @@ import NotFoundError from '../errors/not-found-error';
 import BadRequestError from '../errors/bad-request-error';
 import ConflictError from '../errors/conflict-error';
 
-dotenv.config({ path: ['.env', '.env.deploy'] });
+dotenv.config({ path: ['./.env', './.env.deploy'] });
 
 export const getUsers = (
   req: Request,
