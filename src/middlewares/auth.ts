@@ -22,7 +22,8 @@ export default (
   const token = authorization.replace('Bearer ', '');
   let payload: IPayload;
   try {
-    payload = jwt.verify(token, process.env.JWT_SECRET as string) as IPayload;
+    const { JWT_SECRET } = process.env;
+    payload = jwt.verify(token, JWT_SECRET as string) as IPayload;
   } catch (error) {
     return next(new NotAuthorizedError('Необходима авторизация'));
   }

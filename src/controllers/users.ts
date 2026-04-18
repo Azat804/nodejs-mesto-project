@@ -104,7 +104,8 @@ export const login = (
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET as string, { expiresIn: '7d' });
+      const { JWT_SECRET } = process.env;
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET as string, { expiresIn: '7d' });
       res.send({ token });
     })
     .catch((error) => next(error));
